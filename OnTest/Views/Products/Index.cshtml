@@ -1,0 +1,68 @@
+﻿@model IEnumerable<OnTest.Models.Product>
+
+@{
+	ViewData["Title"] = "Index";
+
+	Pager pager = new Pager();
+
+	int pageNo = 0;
+	if (ViewBag.Pager != null)
+	{
+		pager = ViewBag.Pager;
+		pageNo = pager.CurrentPage;
+	}
+}
+
+<div class="form-group">
+	<form asp-action="Search" asp-controller="Products">
+		<input class="form-control" name="item" type="search" placeholder="search" />
+		<button class="btn btn-success" type="submit">Search</button>
+	</form>
+</div>
+
+<section style="background-color: #eee;">
+	<div class="text-center container py-5">
+		<h4 class="mt-4 mb-5"><strong>Our Last Products</strong></h4>
+
+		<div class="row">
+			@foreach (var item in Model)
+			{
+				<div class="col-lg-4 col-md-6 mb-4">
+					<div class="card">
+						<div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+							 data-mdb-ripple-color="light">
+							<img src="@item.ImageURL"
+								 class="w-100" />
+							<a href="#!">
+								<div class="mask">
+									<div class="d-flex justify-content-start align-items-end h-100">
+										<h5><span class="badge bg-success ms-2">Available</span></h5>
+									</div>
+								</div>
+								<div class="hover-overlay">
+									<div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+								</div>
+							</a>
+						</div>
+						<div class="card-body">
+
+							<h5>
+								<a class="text-dark card-title mb-3" asp-controller="Orders" asp-action="AddToCart" asp-route-id="@item.Id" onclick="return confirm('add to cart?')">@Html.DisplayFor(modelItem => item.Name)</a>
+							</h5>
+							
+								<p><a class="btn btn-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a></p>
+							
+							<h6 class="mb-3">@Html.DisplayFor(modelItem => item.Price) $</h6>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+
+	</div>
+</section>
+<section style="background-color: #eee;">
+	<div class="container py-5">
+		<partial name="_pager" model="@pager" />
+	</div>
+</section>

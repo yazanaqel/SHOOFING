@@ -1,0 +1,156 @@
+﻿@model IEnumerable<Order>
+
+@{
+	ViewData["Title"] = "Index";
+	string invoice = "";
+	double total = 0;
+}
+
+<section class="h-100 h-custom" style="background-color: #eee;">
+	<div class="container py-5 h-100">
+		<div class="row d-flex justify-content-center align-items-center h-100">
+			<h4 class="mt-4 mb-5"><strong>My Cart</strong></h4>
+			<div class="col">
+				<div class="card">
+					<div class="card-body p-4">
+
+						<div class="row">
+
+							<div class="col-lg-7">
+								<h5 class="mb-3">
+									<a asp-action="Index" asp-controller="Products" class="text-body">
+										<i class="fas fa-long-arrow-alt-left me-2"></i>Continue shopping
+									</a>
+								</h5>
+								<hr>
+
+								<div class="d-flex justify-content-between align-items-center mb-4">
+									<div>
+										<p class="mb-1">Shopping cart</p>
+										<p class="mb-0">You have @Model.Count() items in your cart</p>
+									</div>
+								</div>
+								@foreach (var item in Model)
+								{
+
+									<div class="card mb-3">
+										<div class="card-body">
+											<div class="d-flex justify-content-between">
+												<div class="d-flex flex-row align-items-center">
+													<div>
+														<img src="@Html.DisplayFor(modelItem => item.ImageURL)"
+															 class="img-fluid rounded-3" alt="Shopping item" style="width: 65px;">
+													</div>
+													<div class="ms-3">
+														<h5>@Html.DisplayFor(modelItem => item.Name)</h5>
+													</div>
+												</div>
+												<div class="d-flex flex-row align-items-center">
+													<a class="btn btn-danger btn-sm" asp-controller="Orders" asp-action="Minus" asp-route-id="@item.Id">-</a>
+													<a class="btn btn-success btn-sm" asp-controller="Orders" asp-action="Plus" asp-route-id="@item.Id">+</a>
+													<div style="width: 50px;">
+													</div>
+													<div style="width: 50px;">
+														<h5 class="fw-normal mb-0">
+															@Html.DisplayFor(modelItem => item.Quantity)
+														</h5>
+													</div>
+													<div style="width: 80px;">
+														<h5 class="mb-0">
+															@{
+																double x = item.Price * item.Quantity;
+
+															}@x.00$
+														</h5>
+													</div>
+													<a class="btn btn-success btn-sm btn-close" asp-controller="Orders" asp-action="Remove" asp-route-id="@item.Id"></a>
+													<a href="#!" style="color: #cecece;"><i class="fas fa-trash-alt"></i></a>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								}
+								@foreach (var x in Model)
+								{
+									total += x.Quantity * x.Price;
+
+
+									invoice += $"Product Name: {x.Name}. | Quantity: {x.Quantity} | Unit Price: {x.Price.ToString("c")}<br><hr />";
+
+									
+								}
+								<textarea hidden id="invoice">This is your invoice from SHOOFING:<br><hr /> @invoice Total: @total.00$<br><hr />Thanks for your visit :)</textarea>
+							</div>
+							<div class="col-lg-5">
+
+								<div class="card bg-primary text-white rounded-3">
+									<div class="card-body">
+										<div class="d-flex justify-content-between align-items-center mb-4">
+											<h5 class="mb-0">Payment details</h5>
+											<img src="https://th.bing.com/th/id/R.3c1947a2e9fcd566c6b8dac7a724ce18?rik=4ssCUHw2ziDa2g&riu=http%3a%2f%2fblog.e-web-solutions.net%2fwp-content%2fuploads%2f2012%2f05%2fphp-shopping-cart-development.png&ehk=mJ1rSYAGPQ37MQFwWhRR1Ty44122W0nMEnIgbqNSkuU%3d&risl=&pid=ImgRaw&r=0"
+												 class="img-fluid rounded-3" style="width: 45px;" alt="Avatar">
+										</div>
+
+										<form class="mt-4" id="mailForm" name="formName">
+											<div class="form-outline form-white mb-4">
+												<input required type="email" id="txtMail" class="form-control form-control-lg" siez="17"
+													   placeholder="Enter Your E-mail" />
+												<label class="form-label" for="typeName">Enter Your E-mail</label>
+											</div>
+
+											<div class="d-flex justify-content-between">
+												<span class="fas fa-long-arrow-alt-right ms-2" >Total: @total.00$</span>
+
+												<input class="btn btn-info btn-block btn-lg" type="submit" value="Apply" asp-action="Apply" asp-controller="Orders">
+												<a class="btn btn-danger btn-block btn-lg" asp-action="Apply" asp-controller="Orders" onclick="return confirm('this will remove all your cart content, are you sure?')">Clear All</a>
+											</div>
+
+										</form>
+
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</section>
+
+
+<script src="https://smtpjs.com/v3/smtp.js">
+</script>
+
+<script>
+
+	const form = document.querySelector('#mailForm');
+
+	function SendMessage(e) {
+		e.preventDefault();
+
+		email = document.querySelector('#txtMail');
+		invoice = document.querySelector('#invoice');
+
+		Email.send({
+			SecureToken: "5564c1bf-e522-4572-9320-55559193007d",
+			To: email.value,
+			From: 'yazanakel107@gmail.com',
+			Subject: 'SHOOFING MALL',
+			Body: invoice.value
+		}).then(
+			message => alert('the invoice has been sent to your email, happy day :)'));
+	}
+
+	form.addEventListener('submit', SendMessage);
+
+
+
+</script>
+
+
